@@ -1,0 +1,25 @@
+{
+  "name": "bakmelui",
+  "version": "1.0.0",
+  "description": "박멸의 달인 - 노란장판 바퀴벌레 서바이벌",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "14.2.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "three": "^0.164.1",
+    "@supabase/supabase-js": "^2.43.1",
+    "zustand": "^4.5.2"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.3",
+    "postcss": "^8.4.38",
+    "autoprefixer": "^10.4.19"
+  }
+}
