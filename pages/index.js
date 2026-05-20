@@ -339,25 +339,25 @@ export default function Home() {
           ) : (
             <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={() => setAuthMode('login')} style={{
-                background: 'rgba(255,255,255,0.06)', border: '1px solid #3a3020',
-                borderRadius: 20, padding: '6px 14px', color: '#aaa', fontSize: 12,
-                cursor: 'pointer', transition: 'all 0.2s',
+                background: 'rgba(255,255,255,0.08)', border: '1px solid #5a4a30',
+                borderRadius: 22, padding: '9px 22px', color: '#ccc', fontSize: 15,
+                cursor: 'pointer', transition: 'all 0.2s', fontWeight: 600,
               }}>로그인</button>
               <button onClick={() => setAuthMode('signup')} style={{
-                background: 'rgba(180,130,0,0.15)', border: '1px solid #7a6020',
-                borderRadius: 20, padding: '6px 14px', color: '#d4a830', fontSize: 12,
-                cursor: 'pointer', fontWeight: 700, transition: 'all 0.2s',
+                background: 'rgba(180,130,0,0.2)', border: '1px solid #9a7a28',
+                borderRadius: 22, padding: '9px 22px', color: '#f0c040', fontSize: 15,
+                cursor: 'pointer', fontWeight: 800, transition: 'all 0.2s',
               }}>방역단 등록</button>
             </div>
           )}
 
           {/* 조작법 힌트 */}
           <div style={{
-            display: 'flex', gap: 12, fontSize: 11, color: '#5a5040',
+            display: 'flex', gap: 14, fontSize: 14, color: '#8a7a5a',
           }}>
             {[['방향키','이동'],['E','공격'],['Q','무기교체'],['B','상점']].map(([k,v]) => (
-              <span key={k} style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                <span style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid #3a3020', borderRadius: 4, padding: '1px 6px', fontFamily: 'monospace', fontSize: 10, color: '#9a8860' }}>{k}</span>
+              <span key={k} style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
+                <span style={{ background: 'rgba(255,255,255,0.10)', border: '1px solid #5a4a28', borderRadius: 6, padding: '3px 10px', fontFamily: 'monospace', fontSize: 13, color: '#d4b870', fontWeight: 700 }}>{k}</span>
                 <span>{v}</span>
               </span>
             ))}
