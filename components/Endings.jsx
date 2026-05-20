@@ -103,6 +103,7 @@ function BadEnding({ stats, onRetry, onMenu }) {
 // GOOD ENDING: 시간 내 생존
 function GoodEnding({ stats, onRetry, onMenu }) {
   const [phase, setPhase] = useState(0);
+  const isDaySurvival = stats.gameMode === 'daysurvival';
 
   useEffect(() => {
     const timers = [
@@ -115,6 +116,12 @@ function GoodEnding({ stats, onRetry, onMenu }) {
 
   const grade = stats.killCount >= 100 ? 'S' : stats.killCount >= 50 ? 'A' : stats.killCount >= 20 ? 'B' : 'C';
   const gradeColor = grade === 'S' ? 'text-yellow-400' : grade === 'A' ? 'text-green-400' : grade === 'B' ? 'text-blue-400' : 'text-gray-400';
+
+  // 하루살이 클리어 시간 포맷
+  const clearSec = stats.survivalTime ?? stats.elapsedTime ?? 0;
+  const clearMin = Math.floor(clearSec / 60);
+  const clearSecRem = clearSec % 60;
+  const clearTimeStr = `${String(clearMin).padStart(2,'0')}:${String(clearSecRem).padStart(2,'0')}`;
 
   return (
     <div className="fixed inset-0 z-50 bg-gradient-to-b from-yellow-950 to-black flex flex-col items-center justify-center overflow-hidden">
@@ -131,51 +138,75 @@ function GoodEnding({ stats, onRetry, onMenu }) {
               opacity: 0.3,
             }}
           >
-            💀
+            {isDaySurvival ? '🪳' : '💀'}
           </div>
         ))}
       </div>
 
       {phase >= 1 && (
         <div className={`text-center transition-all duration-1000 ${phase >= 1 ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
-          <div className="text-6xl mb-2">🎉</div>
-          <div className="text-yellow-400 text-4xl font-bold mb-1">생존 성공!!</div>
-          <div className="text-gray-300 text-sm">3분 동안 살아남았다!!</div>
+          <div className="text-6xl mb-2">{isDaySurvival ? '🏆' : '🎉'}</div>
+          <div className="text-yellow-400 text-4xl font-bold mb-1">
+            {isDaySurvival ? '500마리를 모두 잡았다!' : '생존 성공!!'}
+          </div>
+          <div className="text-gray-300 text-sm">
+            {isDaySurvival ? '방역 완료!! 고시원이 깨끗해졌다!!' : '3분 동안 살아남았다!!'}
+          </div>
         </div>
       )}
 
       {phase >= 2 && (
         <div className="bg-gray-900 border-2 border-yellow-600 rounded-xl p-6 max-w-md mx-4 mt-6 text-center">
-          {/* Grade */}
-          <div className={`text-8xl font-bold ${gradeColor} mb-2`}>{grade}</div>
-          <div className="text-gray-400 text-sm mb-4">방역 등급</div>
-
-          {/* Story text */}
-          <div className="text-gray-300 italic text-sm border-l-4 border-yellow-700 pl-3 text-left mb-4">
-            "오늘 밤 바퀴와의 전쟁에서 살아남았다.<br/>
-            슬리퍼는 뜨거웠고, 손목은 아팠지만...<br/>
-            <span className="text-yellow-400">적어도 오늘 밤은 내가 이 방의 주인이다.</span>"
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-2 gap-2 text-sm mb-4">
-            <div className="bg-gray-800 rounded p-2">
-              <div className="text-gray-400">총 처치</div>
-              <div className="text-white font-bold">{stats.killCount}마리 🪳</div>
-            </div>
-            <div className="bg-gray-800 rounded p-2">
-              <div className="text-gray-400">획득 귗</div>
-              <div className="text-yellow-300 font-bold">{stats.money.toLocaleString()} 귗</div>
-            </div>
-            <div className="bg-gray-800 rounded p-2">
-              <div className="text-gray-400">최고 웨이브</div>
-              <div className="text-red-300 font-bold">WAVE {stats.wave}</div>
-            </div>
-            <div className="bg-gray-800 rounded p-2">
-              <div className="text-gray-400">최종 점수</div>
-              <div className="text-purple-300 font-bold">{stats.score.toLocaleString()}</div>
-            </div>
-          </div>
+          {isDaySurvival ? (
+            /* 하루살이: 클리어 시간만 표시 */
+            <>
+              <div className="text-cyan-300 text-7xl font-mono font-bold mb-1">{clearTimeStr}</div>
+              <div className="text-gray-400 text-sm mb-4">⏱ 클리어 타임</div>
+              <div className="text-gray-300 italic text-sm border-l-4 border-cyan-700 pl-3 text-left mb-4">
+                "500마리. 단 한 마리도 빠져나가지 못했다.<br/>
+                <span className="text-cyan-400">오늘 밤 이 방의 최강자는 나다.</span>"
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div className="bg-gray-800 rounded p-2">
+                  <div className="text-gray-400">처치 수</div>
+                  <div className="text-white font-bold">500마리 🪳</div>
+                </div>
+                <div className="bg-gray-800 rounded p-2">
+                  <div className="text-gray-400">남은 귗</div>
+                  <div className="text-yellow-300 font-bold">{(stats.money ?? 0).toLocaleString()} 귗</div>
+                </div>
+              </div>
+            </>
+          ) : (
+            /* 3분/무한: 기존 점수 표시 */
+            <>
+              <div className={`text-8xl font-bold ${gradeColor} mb-2`}>{grade}</div>
+              <div className="text-gray-400 text-sm mb-4">방역 등급</div>
+              <div className="text-gray-300 italic text-sm border-l-4 border-yellow-700 pl-3 text-left mb-4">
+                "오늘 밤 바퀴와의 전쟁에서 살아남았다.<br/>
+                슬리퍼는 뜨거웠고, 손목은 아팠지만...<br/>
+                <span className="text-yellow-400">적어도 오늘 밤은 내가 이 방의 주인이다.</span>"
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-sm mb-4">
+                <div className="bg-gray-800 rounded p-2">
+                  <div className="text-gray-400">총 처치</div>
+                  <div className="text-white font-bold">{stats.killCount}마리 🪳</div>
+                </div>
+                <div className="bg-gray-800 rounded p-2">
+                  <div className="text-gray-400">남은 귗</div>
+                  <div className="text-yellow-300 font-bold">{(stats.money ?? 0).toLocaleString()} 귗</div>
+                </div>
+                <div className="bg-gray-800 rounded p-2">
+                  <div className="text-gray-400">최고 웨이브</div>
+                  <div className="text-red-300 font-bold">WAVE {stats.wave}</div>
+                </div>
+                <div className="bg-gray-800 rounded p-2">
+                  <div className="text-gray-400">최종 점수</div>
+                  <div className="text-purple-300 font-bold">{(stats.score ?? 0).toLocaleString()}</div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       )}
 

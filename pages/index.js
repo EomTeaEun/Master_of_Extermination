@@ -355,7 +355,7 @@ export default function Home() {
           <div style={{
             display: 'flex', gap: 12, fontSize: 11, color: '#5a5040',
           }}>
-            {[['WASD','이동'],['E','공격'],['Q','무기교체'],['B','상점']].map(([k,v]) => (
+            {[['방향키','이동'],['E','공격'],['Q','무기교체'],['B','상점']].map(([k,v]) => (
               <span key={k} style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                 <span style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid #3a3020', borderRadius: 4, padding: '1px 6px', fontFamily: 'monospace', fontSize: 10, color: '#9a8860' }}>{k}</span>
                 <span>{v}</span>

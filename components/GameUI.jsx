@@ -190,7 +190,7 @@ export default function GameUI({ gameState, events, onOpenShop, onOpenLeaderboar
 
   if (!gameState) return null;
 
-  const { hp, maxHp, timeLeft, killCount, money, combo, wave, currentWeapon, weaponSlots, attackCooldown, roachCount, playerPos, roachPositions, daySurvivalKilled, daySurvivalTarget, sprayEnergy, sprayRecharging } = gameState;
+  const { hp, maxHp, timeLeft, killCount, money, combo, wave, currentWeapon, weaponSlots, attackCooldown, roachCount, playerPos, roachPositions, daySurvivalKilled, daySurvivalTarget, sprayEnergy, sprayRecharging, lightsOut } = gameState;
   const weaponConfig = WEAPONS[currentWeapon];
   const cooldownPct = weaponConfig ? Math.min(1, attackCooldown / (weaponConfig.cooldown / 1000)) : 0;
   const timeIsLow = isFinite(timeLeft) && timeLeft < 30;
@@ -203,11 +203,26 @@ export default function GameUI({ gameState, events, onOpenShop, onOpenLeaderboar
 
   return (
     <>
-      {/* Damage flash overlay — HP 깎일 때만 */}
+      {/* Damage flash overlay */}
       <div
         className="fixed inset-0 z-30 pointer-events-none bg-red-600 transition-opacity duration-300"
         style={{ opacity: damageFlash ? 0.35 : 0 }}
       />
+
+      {/* 정전 블랙아웃 — 3초간 시야 완전 차단 */}
+      <div
+        className="fixed inset-0 pointer-events-none transition-opacity duration-500"
+        style={{ zIndex: 35, background: '#000', opacity: lightsOut ? 0.97 : 0 }}
+      >
+        {lightsOut && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center" style={{ animation: 'pulse 0.6s ease-in-out infinite' }}>
+              <div style={{ fontSize: 48 }}>⚡</div>
+              <div style={{ color: '#555', fontSize: 14, marginTop: 8, letterSpacing: 2 }}>정전...</div>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* TOP BAR */}
       <div className="fixed top-0 left-0 right-0 z-20 flex items-start justify-between p-3 pointer-events-none">
