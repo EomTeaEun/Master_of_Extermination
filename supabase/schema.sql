@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS scores (
   survival_time INTEGER NOT NULL DEFAULT 0, -- seconds
   game_mode TEXT NOT NULL DEFAULT '3min', -- '3min' | 'infinite' | 'daysurvival'
   ended_with TEXT NOT NULL DEFAULT 'timeout', -- 'timeout' | 'death' | 'win'
+  score INTEGER NOT NULL DEFAULT 0, -- 3min/infinite: kill*150+money/10 | daysurvival: 9999999-time*100
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
