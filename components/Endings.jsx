@@ -221,6 +221,7 @@ export default function Endings({ type, stats, user, onRetry, onMenu }) {
         survivalTime: stats.survivalTime || 0,
         gameMode: stats.gameMode || '3min',
         endedWith: type === 'win' ? 'win' : 'death',
+        score: stats.score ?? 0,
       });
     }
   }, [user, stats, saved, type]);

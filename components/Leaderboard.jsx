@@ -1,39 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getDailyRankingByMode, getAllTimeRankingByMode } from '../lib/supabase';
 
-// ── 모의 데이터 ─────────────────────────────────────────────────
-const MOCK = {
-  '3min': {
-    daily:   [
-      { username: '방역왕_김씨',    kill_count: 247, money_earned: 18400, wave_reached: 8,  score: 38890 },
-      { username: '슬리퍼달인',     kill_count: 198, money_earned: 14200, wave_reached: 7,  score: 31620 },
-      { username: '바퀴사냥꾼99',   kill_count: 156, money_earned: 11000, wave_reached: 6,  score: 24500 },
-    ],
-    allTime: [
-      { username: '전국방역왕',     kill_count: 1842, money_earned: 142000, wave_reached: 22, score: 290500 },
-      { username: '살충제마스터',   kill_count: 1234, money_earned: 98000,  wave_reached: 15, score: 195600 },
-    ],
-  },
-  infinite: {
-    daily:   [
-      { username: '무한의사나이',   kill_count: 890,  money_earned: 68000,  wave_reached: 24, score: 140300 },
-      { username: '바퀴지옥탈출',  kill_count: 654,  money_earned: 51000,  wave_reached: 18, score: 103200 },
-    ],
-    allTime: [
-      { username: 'EndlessKiller', kill_count: 4200, money_earned: 320000, wave_reached: 55, score: 662000 },
-    ],
-  },
-  daysurvival: {
-    daily:   [
-      { username: '스피드런王',     kill_count: 500, survival_time: 187, score: 9980700 },
-      { username: '바퀴청소기',     kill_count: 500, survival_time: 234, score: 9976600 },
-    ],
-    allTime: [
-      { username: '세계최속방역',   kill_count: 500, survival_time: 142, score: 9985800 },
-      { username: '스피드런王',     kill_count: 500, survival_time: 187, score: 9980700 },
-    ],
-  },
-};
+// 모의 데이터 없음 — 실제 Supabase 데이터만 사용
 
 function fmtTime(sec) {
   const m = Math.floor(sec / 60);
@@ -67,14 +35,14 @@ export default function Leaderboard({ onClose, currentUser }) {
     try {
       const fn = tab === 'daily' ? getDailyRankingByMode : getAllTimeRankingByMode;
       const { data } = await fn(mode);
-      setDataMap(prev => ({ ...prev, [mode]: { ...prev[mode], [tab]: data?.length > 0 ? data : MOCK[mode][tab] } }));
+      setDataMap(prev => ({ ...prev, [mode]: { ...prev[mode], [tab]: data ?? [] } }));
     } catch {
-      setDataMap(prev => ({ ...prev, [mode]: { ...prev[mode], [tab]: MOCK[mode][tab] } }));
+      setDataMap(prev => ({ ...prev, [mode]: { ...prev[mode], [tab]: [] } }));
     }
     setLoading(false);
   }
 
-  const rows = dataMap[gameMode]?.[tab] ?? MOCK[gameMode][tab];
+  const rows = dataMap[gameMode]?.[tab] ?? [];
   const mInfo = MODE_INFO[gameMode];
   const isDaysurvival = gameMode === 'daysurvival';
 
@@ -195,7 +163,7 @@ export default function Leaderboard({ onClose, currentUser }) {
             🔄 새로고침
           </button>
           {!isDaysurvival && (
-            <span style={{ color: '#3a3020', fontSize: 10 }}>점수 = 킬×150 + 귗/10</span>
+            <span style={{ color: '#3a3020', fontSize: 10 }}>점수 = 킬×10 + 귗×5</span>
           )}
           <button onClick={onClose} style={{
             background: 'rgba(255,255,255,0.06)', border: '1px solid #3a3020',

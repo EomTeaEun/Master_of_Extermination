@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
+import dynamic from 'next/dynamic';
 import { supabase, signIn, signUp } from '../lib/supabase';
+
+const Leaderboard = dynamic(() => import('../components/Leaderboard'), { ssr: false });
 
 // ── 바퀴벌레 배경 파티클 ──────────────────────────────────────────
 function RoachParticle({ style }) {
@@ -140,7 +143,7 @@ const MODES = [
     key: 'daysurvival',
     icon: '🏠',
     label: '하루살이',
-    desc: '전기세·집 상태 관리하며 버텨라!',
+    desc: '500마리! 제한된 바퀴를 최대한 빨리 잡아라!',
     accent: '#2266cc',
     glow: 'rgba(30,80,200,0.35)',
     bg: 'rgba(5,15,50,0.55)',
@@ -150,6 +153,7 @@ const MODES = [
 export default function Home() {
   const router = useRouter();
   const [authMode,      setAuthMode]      = useState(null);
+  const [showRanking,   setShowRanking]   = useState(false);
   const [user,          setUser]          = useState(null);
   const [loading,       setLoading]       = useState(true);
   const [selectedMode,  setSelectedMode]  = useState('3min');
@@ -486,6 +490,22 @@ export default function Home() {
               비로그인으로 시작 (랭킹 미등록)
             </button>
           )}
+
+          {/* 랭킹 버튼 */}
+          <button onClick={() => setShowRanking(true)} style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            background: 'rgba(180,130,0,0.1)',
+            border: '1px solid rgba(180,130,0,0.3)',
+            borderRadius: 10, padding: '9px 22px',
+            color: '#c8a030', fontSize: 13, fontWeight: 700,
+            cursor: 'pointer', letterSpacing: 1,
+            transition: 'all 0.2s',
+          }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(180,130,0,0.22)'; e.currentTarget.style.borderColor = 'rgba(200,160,0,0.6)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(180,130,0,0.1)'; e.currentTarget.style.borderColor = 'rgba(180,130,0,0.3)'; }}
+          >
+            🏆 명예의 전당
+          </button>
         </div>
 
         {/* ── 하단 격언 ── */}
@@ -501,6 +521,11 @@ export default function Home() {
       {authMode && (
         <AuthModal mode={authMode} onClose={() => setAuthMode(null)}
           onSuccess={u => { setUser(u); setAuthMode(null); }} />
+      )}
+
+      {/* ── 랭킹 모달 ── */}
+      {showRanking && (
+        <Leaderboard onClose={() => setShowRanking(false)} currentUser={user} />
       )}
     </>
   );

@@ -59,6 +59,14 @@ const SCENES = [
     emoji: '🥿',
     subtext: '바닥에 슬리퍼가 보인다...',
     illustration: <SlipperOnFloor />,
+  },
+  {
+    bg: 'bg-yellow-950',
+    caption: '🎯 임무 브리핑',
+    text: '최대한 귗을 많이 모으고,\n최소한의 귗을 사용하여 바퀴를 잡아라!!!',
+    emoji: '💰',
+    subtext: '점수 = 킬수 × 10 + 귗 × 5',
+    illustration: <MissionBriefing />,
     final: true,
   },
 ];
@@ -168,6 +176,39 @@ function SlipperOnFloor() {
   );
 }
 
+function MissionBriefing() {
+  return (
+    <div className="relative w-64 h-48 bg-yellow-950 border border-yellow-700 rounded mx-auto overflow-hidden flex flex-col items-center justify-center gap-3">
+      {/* 타이틀 바 */}
+      <div className="absolute top-0 left-0 right-0 h-6 bg-yellow-800 flex items-center justify-center">
+        <span className="text-yellow-300 text-xs font-bold tracking-widest">[ 방역 작전 지침서 ]</span>
+      </div>
+      {/* 내용 */}
+      <div className="mt-4 flex flex-col items-center gap-2 px-4">
+        <div className="flex items-center gap-3">
+          <span className="text-3xl">💰</span>
+          <div className="text-left">
+            <div className="text-yellow-300 text-xs font-bold">귗 최대 수집</div>
+            <div className="text-yellow-500 text-xs">바퀴 처치 시 드롭</div>
+          </div>
+        </div>
+        <div className="w-full h-px bg-yellow-800 opacity-60" />
+        <div className="flex items-center gap-3">
+          <span className="text-3xl">🥿</span>
+          <div className="text-left">
+            <div className="text-yellow-300 text-xs font-bold">귗 최소 소비</div>
+            <div className="text-yellow-500 text-xs">업그레이드는 신중하게</div>
+          </div>
+        </div>
+        <div className="w-full h-px bg-yellow-800 opacity-60" />
+        <div className="bg-yellow-900 rounded px-3 py-1 text-center">
+          <span className="text-yellow-400 text-xs font-bold">점수 = 킬수 × 10 + 귗 × 5</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Opening({ onComplete }) {
   const [scene, setScene] = useState(0);
   const [visible, setVisible] = useState(true);
@@ -227,7 +268,7 @@ export default function Opening({ onComplete }) {
 
         {/* Main text */}
         <div className={`text-center transition-all duration-500 ${textVisible ? 'opacity-100' : 'opacity-0'}`}>
-          <div className="text-white text-xl font-bold mb-1 font-['Noto_Sans_KR']">
+          <div className="text-white text-xl font-bold mb-1 font-['Noto_Sans_KR']" style={{ whiteSpace: 'pre-line' }}>
             {current.text}
           </div>
           <div className="text-4xl my-2">{current.emoji}</div>

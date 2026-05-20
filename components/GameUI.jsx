@@ -190,10 +190,16 @@ export default function GameUI({ gameState, events, onOpenShop, onOpenLeaderboar
 
   if (!gameState) return null;
 
-  const { hp, maxHp, timeLeft, killCount, money, combo, wave, currentWeapon, weaponSlots, attackCooldown, roachCount, playerPos, roachPositions } = gameState;
+  const { hp, maxHp, timeLeft, killCount, money, combo, wave, currentWeapon, weaponSlots, attackCooldown, roachCount, playerPos, roachPositions, daySurvivalKilled, daySurvivalTarget, sprayEnergy, sprayRecharging } = gameState;
   const weaponConfig = WEAPONS[currentWeapon];
   const cooldownPct = weaponConfig ? Math.min(1, attackCooldown / (weaponConfig.cooldown / 1000)) : 0;
   const timeIsLow = isFinite(timeLeft) && timeLeft < 30;
+  const isDaySurvival = gameMode === 'daysurvival';
+  // 하루살이: elapsedTime = GAME_DURATION(180) - timeLeft 대신 별도 카운트업
+  // timeLeft가 Infinity이므로 엔진의 elapsedTime을 직접 쓰기 위해 gameState에서 받음
+  const elapsed = gameState.elapsedTime ?? 0;
+  const elapsedMin = Math.floor(elapsed / 60);
+  const elapsedSec = Math.floor(elapsed % 60);
 
   return (
     <>
@@ -217,12 +223,35 @@ export default function GameUI({ gameState, events, onOpenShop, onOpenLeaderboar
         </div>
 
         {/* Center: Timer */}
-        <div className={`text-center ${timeIsLow ? 'animate-pulse' : ''}`}>
-          <div className={`text-3xl font-mono font-bold ${timeIsLow ? 'text-red-400' : 'text-white'} drop-shadow-lg`}>
-            {formatTime(timeLeft)}
-          </div>
-          {gameMode === 'infinite' && (
-            <div className="text-gray-500 text-xs">무한모드</div>
+        <div className="text-center">
+          {isDaySurvival ? (
+            <>
+              {/* 하루살이: 올라가는 타이머 + 킬 진행도 */}
+              <div className="text-3xl font-mono font-bold text-cyan-300 drop-shadow-lg">
+                {String(elapsedMin).padStart(2,'0')}:{String(elapsedSec).padStart(2,'0')}
+              </div>
+              <div className="text-xs text-cyan-500 mt-0.5">⏱ 경과 시간</div>
+              <div className="mt-1">
+                <div className="text-yellow-300 font-bold text-sm">
+                  🪳 {daySurvivalKilled ?? 0} / {daySurvivalTarget ?? 500}
+                </div>
+                <div className="w-32 h-1.5 bg-gray-800 rounded-full overflow-hidden mt-0.5 mx-auto">
+                  <div
+                    className="h-full rounded-full bg-yellow-400 transition-all duration-300"
+                    style={{ width: `${((daySurvivalKilled ?? 0) / (daySurvivalTarget ?? 500)) * 100}%` }}
+                  />
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className={`text-3xl font-mono font-bold ${timeIsLow ? 'text-red-400 animate-pulse' : 'text-white'} drop-shadow-lg`}>
+                {formatTime(timeLeft)}
+              </div>
+              {gameMode === 'infinite' && (
+                <div className="text-gray-500 text-xs">무한모드</div>
+              )}
+            </>
           )}
         </div>
 
@@ -279,16 +308,37 @@ export default function GameUI({ gameState, events, onOpenShop, onOpenLeaderboar
               <span className="text-gray-500 text-xs mt-0.5">공격</span>
             </div>
           </div>
-          {/* Cooldown bar under active weapon */}
-          <div className="w-full h-1 bg-gray-700 rounded-full overflow-hidden mt-0.5" style={{ maxWidth: 120 }}>
-            <div
-              className="h-full rounded-full transition-all"
-              style={{
-                width: `${(1 - cooldownPct) * 100}%`,
-                backgroundColor: cooldownPct > 0.5 ? '#ef4444' : '#facc15',
-              }}
-            />
-          </div>
+          {/* 살충제: 에너지 게이지 / 그 외: 쿨다운 바 */}
+          {currentWeapon === 'spray' ? (
+            <div className="flex flex-col items-center gap-0.5 mt-0.5" style={{ maxWidth: 120, width: '100%' }}>
+              <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden border border-gray-600" style={{ maxWidth: 120 }}>
+                <div
+                  className="h-full rounded-full transition-all duration-100"
+                  style={{
+                    width: `${(sprayEnergy ?? 1) * 100}%`,
+                    backgroundColor: sprayRecharging
+                      ? '#f97316'                                      // 충전 중: 주황
+                      : (sprayEnergy ?? 1) > 0.5 ? '#34d399' : '#facc15', // 여유: 초록 / 절반이하: 노랑
+                  }}
+                />
+              </div>
+              <span className="text-xs font-bold" style={{
+                color: sprayRecharging ? '#f97316' : '#34d399', fontSize: 10
+              }}>
+                {sprayRecharging ? '⚡ 충전 중...' : `💨 ${Math.round((sprayEnergy ?? 1) * 100)}%`}
+              </span>
+            </div>
+          ) : (
+            <div className="w-full h-1 bg-gray-700 rounded-full overflow-hidden mt-0.5" style={{ maxWidth: 120 }}>
+              <div
+                className="h-full rounded-full transition-all"
+                style={{
+                  width: `${(1 - cooldownPct) * 100}%`,
+                  backgroundColor: cooldownPct > 0.5 ? '#ef4444' : '#facc15',
+                }}
+              />
+            </div>
+          )}
         </div>
 
         {/* Right: Shop button */}
