@@ -224,8 +224,8 @@ export default function GameUI({ gameState, events, onOpenShop, onOpenLeaderboar
         )}
       </div>
 
-      {/* TOP BAR */}
-      <div className="fixed top-0 left-0 right-0 z-20 flex items-start justify-between p-3 pointer-events-none">
+      {/* TOP BAR — 블랙아웃(z-35) 위에 표시 */}
+      <div className="fixed top-0 left-0 right-0 z-40 flex items-start justify-between p-3 pointer-events-none">
         {/* Left: HP + Wave */}
         <div className="flex flex-col gap-2 pointer-events-auto">
           <HPBar hp={hp} maxHp={maxHp} />
